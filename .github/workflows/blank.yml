@@ -40,4 +40,5 @@ jobs:
           pwd
           ls -al
           java -version
-          ./mvnw --version
+          echo $JAVA_HOME
+          echo $JAVA_HOME_17_X64
