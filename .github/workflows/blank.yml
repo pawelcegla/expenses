@@ -46,3 +46,4 @@ jobs:
           ls -al
           echo $JAVA_HOME
           java -version
+          ./mvnw test
