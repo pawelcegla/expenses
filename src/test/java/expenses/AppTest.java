@@ -14,6 +14,6 @@ class AppTest {
      */
     @Test
     void shouldAnswerWithTrue() {
-        assertEquals(1 + 2, 3);
+        assertEquals(1 + 2, 4);
     }
 }
