@@ -39,5 +39,7 @@ jobs:
         run: |
           pwd
           ls -al
+          echo $JAVA_HOME
           export JAVA_HOME=$JAVA_HOME_17_X64
+          echo $JAVA_HOME
           java -version
