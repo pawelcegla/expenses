@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
@@ -14,6 +15,8 @@ public class Cli {
         run("jdbc:sqlite:expenses.db", args);
     }
 
+    private static final Pattern hyphenedWords = Pattern.compile("\\p{Lower}+(-\\p{Lower}+)*");
+
     static void run(String url, String... args) throws SQLException {
         try (var c = DriverManager.getConnection(url)) {
             var s = new Storage(c);
@@ -21,7 +24,16 @@ public class Cli {
                     LocalDate.parse(args[0], ISO_LOCAL_DATE),
                     new BigDecimal(args[1]),
                     args[2],
-                    Arrays.copyOfRange(args, 3, args.length));
+                    validate(Arrays.copyOfRange(args, 3, args.length)));
         }
+    }
+
+    static String[] validate(String... tags) throws IllegalArgumentException {
+        for (var tag : tags) {
+            if (!hyphenedWords.matcher(tag).matches()) {
+                throw new IllegalArgumentException(String.format("tag: %s", tag));
+            }
+        }
+        return tags;
     }
 }
