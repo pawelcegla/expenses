@@ -1,5 +1,7 @@
 package expenses;
 
+import org.sqlite.JDBC;
+
 import java.math.BigDecimal;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,6 +14,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 public class Cli {
 
     public static void main(String... args) throws SQLException {
+        DriverManager.registerDriver(new JDBC());
         run("jdbc:sqlite:expenses.db", args);
     }
 
