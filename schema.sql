@@ -16,3 +16,5 @@ CREATE TRIGGER expenses_au AFTER UPDATE ON expenses BEGIN
   INSERT INTO fts_expenses(fts_expenses, rowid, description, tags) VALUES ('delete', old.rowid, old.description, old.tags);
   INSERT INTO fts_expenses(rowid, description, tags) VALUES (new.rowid, new.description, new.tags);
 END;
+
+CREATE TABLE current_date (date TEXT NOT NULL CHECK (date(date) IS NOT NULL));
