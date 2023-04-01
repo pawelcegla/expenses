@@ -1,5 +1,6 @@
-package expenses;
+package expenses.cli;
 
+import expenses.Storage;
 import org.sqlite.JDBC;
 
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ import java.util.regex.Pattern;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
-public class Cli {
+public class Bootstrap {
 
     public static void main(String... args) throws SQLException {
         DriverManager.registerDriver(new JDBC());
