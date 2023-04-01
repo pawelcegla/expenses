@@ -1,31 +1,47 @@
 package expenses.cli;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.format.DateTimeParseException;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 public class CommandLineInterfaceTest {
 
+    private Properties props;
+
+    @BeforeEach
+    void setup() {
+        props = new Properties();
+    }
+
     @Test
-    public void shouldFailOnIncorrectDate() {
+    void shouldFailOnIncorrectDate() {
+        props.setProperty("date", "24 marca 2023");
         assertThrowsExactly(
                 DateTimeParseException.class,
-                () -> Bootstrap.run("jdbc:sqlite::memory:", "24 marca 2023"));
+                () -> Bootstrap.run("jdbc:sqlite::memory:", props));
     }
 
     @Test
-    public void shouldFailOnIncorrectAmount() {
+    void shouldFailOnIncorrectAmount() {
+        props.setProperty("date", "2023-03-24");
+        props.setProperty("amount", "0xCAFEBABE");
         assertThrowsExactly(
                 NumberFormatException.class,
-                () -> Bootstrap.run("jdbc:sqlite::memory:", "2023-03-24", "0xCAFEBABE"));
+                () -> Bootstrap.run("jdbc:sqlite::memory:", props));
     }
 
     @Test
-    public void shouldFailOnIncorrectTag() {
+    void shouldFailOnIncorrectTag() {
+        props.setProperty("date", "2023-03-24");
+        props.setProperty("amount", "123.45");
+        props.setProperty("description", "jedzenie");
+        props.setProperty("tags", "zakupy w Biedronce ;-)");
         assertThrowsExactly(
                 IllegalArgumentException.class,
-                () -> Bootstrap.run("jdbc:sqlite::memory:", "2023-03-24", "123.45", "jedzenie", "Zakupy w Biedronce :-)"));
+                () -> Bootstrap.run("jdbc:sqlite::memory:", props));
     }
 }

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
@@ -16,19 +16,19 @@ public class Bootstrap {
 
     public static void main(String... args) throws SQLException {
         DriverManager.registerDriver(new JDBC());
-        run("jdbc:sqlite:expenses.db", args);
+        run("jdbc:sqlite:expenses.db", System.getProperties());
     }
 
     private static final Pattern hyphenedWords = Pattern.compile("\\p{Lower}+(-\\p{Lower}+)*");
 
-    static void run(String url, String... args) throws SQLException {
+    static void run(String url, Properties props) throws SQLException {
         try (var c = DriverManager.getConnection(url)) {
             var s = new Storage(c);
             s.add(
-                    LocalDate.parse(args[0], ISO_LOCAL_DATE),
-                    new BigDecimal(args[1]),
-                    args[2],
-                    validate(Arrays.copyOfRange(args, 3, args.length)));
+                    LocalDate.parse(props.getProperty("date"), ISO_LOCAL_DATE),
+                    new BigDecimal(props.getProperty("amount")),
+                    props.getProperty("description"),
+                    validate(props.getProperty("tags").split(" ")));
         }
     }
 
