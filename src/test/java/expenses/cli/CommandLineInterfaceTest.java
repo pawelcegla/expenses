@@ -19,7 +19,7 @@ public class CommandLineInterfaceTest {
 
     @Test
     void shouldFailOnIncorrectDate() {
-        props.setProperty("date", "24 marca 2023");
+        props.setProperty("date", "03/24/23");
         assertThrowsExactly(
                 DateTimeParseException.class,
                 () -> Bootstrap.run("jdbc:sqlite::memory:", props));
@@ -38,8 +38,8 @@ public class CommandLineInterfaceTest {
     void shouldFailOnIncorrectTag() {
         props.setProperty("date", "2023-03-24");
         props.setProperty("amount", "123.45");
-        props.setProperty("description", "jedzenie");
-        props.setProperty("tags", "zakupy w Biedronce ;-)");
+        props.setProperty("description", "food");
+        props.setProperty("tags", "Walmart ;-)");
         assertThrowsExactly(
                 IllegalArgumentException.class,
                 () -> Bootstrap.run("jdbc:sqlite::memory:", props));
