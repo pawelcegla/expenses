@@ -56,7 +56,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>expenses.Cli</mainClass>
+                            <mainClass>expenses.cli.Bootstrap</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
