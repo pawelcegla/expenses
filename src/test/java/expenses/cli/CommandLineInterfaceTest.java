@@ -19,29 +19,41 @@ public class CommandLineInterfaceTest {
 
     @Test
     void shouldFailOnIncorrectDate() {
+        props.setProperty("script", "e");
         props.setProperty("date", "03/24/23");
         assertThrowsExactly(
                 DateTimeParseException.class,
-                () -> Bootstrap.run("jdbc:sqlite::memory:", props));
+                () -> Bootstrap.storeExpense("jdbc:sqlite::memory:", props));
     }
 
     @Test
     void shouldFailOnIncorrectAmount() {
+        props.setProperty("script", "e");
         props.setProperty("date", "2023-03-24");
         props.setProperty("amount", "0xCAFEBABE");
         assertThrowsExactly(
                 NumberFormatException.class,
-                () -> Bootstrap.run("jdbc:sqlite::memory:", props));
+                () -> Bootstrap.storeExpense("jdbc:sqlite::memory:", props));
     }
 
     @Test
     void shouldFailOnIncorrectTag() {
+        props.setProperty("script", "e");
         props.setProperty("date", "2023-03-24");
         props.setProperty("amount", "123.45");
         props.setProperty("description", "food");
         props.setProperty("tags", "Walmart ;-)");
         assertThrowsExactly(
                 IllegalArgumentException.class,
-                () -> Bootstrap.run("jdbc:sqlite::memory:", props));
+                () -> Bootstrap.storeExpense("jdbc:sqlite::memory:", props));
+    }
+
+    @Test
+    void shouldFailOnIncorrectCurrentDate() {
+        props.setProperty("script", "d");
+        props.setProperty("date", "04/03/2023");
+        assertThrowsExactly(
+                DateTimeParseException.class,
+                () -> Bootstrap.storeCurrentDate("jdbc:sqlite::memory:", props));
     }
 }

@@ -26,4 +26,11 @@ public class Storage {
             s.executeUpdate();
         }
     }
+
+    public void currentDate(LocalDate date) throws SQLException {
+        try (var s = c.prepareStatement("INSERT INTO current_date (rowid, date) VALUES (1, ?) ON CONFLICT(rowid) DO UPDATE SET date=excluded.date;")) {
+            s.setString(1, ISO_LOCAL_DATE.format(date));
+            s.executeUpdate();
+        }
+    }
 }
