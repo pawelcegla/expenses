@@ -2,6 +2,7 @@ package expenses.cli;
 
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.server.SshServer;
+import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.shell.ProcessShellFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +28,13 @@ public class Esesejcz {
             log.info("public key fingerprint: {}", fingerprint((RSAPublicKey) pair.getPublic()));
             sshd.setKeyPairProvider(KeyPairProvider.wrap(pair));
             sshd.setPort(1022);
-            sshd.setPasswordAuthenticator((u, p, s) -> true);
+            sshd.setPasswordAuthenticator(Esesejcz::authenticate);
             sshd.setShellFactory(new ProcessShellFactory("/bin/zsh -i -l", "/bin/zsh", "-i", "-l"));
             sshd.start();
-            String s;
-            do {
+            var s = in.readLine();
+            while (s != null && !"exit".equalsIgnoreCase(s)) {
                 s = in.readLine();
-            } while (s != null && !"exit".equalsIgnoreCase(s));
+            }
         }
     }
 
@@ -59,5 +60,10 @@ public class Esesejcz {
         } catch (IOException | NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private static boolean authenticate(String u, String p, ServerSession s) {
+        log.info("authenticating: {}", u);
+        return true;
     }
 }
