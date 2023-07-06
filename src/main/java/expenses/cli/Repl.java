@@ -36,7 +36,7 @@ public class Repl implements Callable<Void> {
         return fromStreams(new InputStreamReader(System.in, UTF_8), new OutputStreamWriter(System.out, UTF_8));
     }
 
-    public static Repl get() {
+    public static Repl create() {
         return System.console() == null ? fromStdin() : fromConsole(System.console());
     }
 

@@ -25,7 +25,7 @@ public class Bootstrap {
                 case "d" -> storeCurrentDate(DATABASE_DEFAULT_URL, System.getProperties());
             }
         } else {
-            Repl.get().call();
+            Repl.create().call();
         }
 
     }
