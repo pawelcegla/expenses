@@ -25,7 +25,11 @@ public class Repl implements Callable<Void> {
     }
 
     static Repl fromStreams(Reader in, Writer out) {
-        return new Repl(new BufferedReader(in), new PrintWriter(out, false), false);
+        return new Repl(
+                in instanceof BufferedReader ? ((BufferedReader) in) : new BufferedReader(in),
+                out instanceof PrintWriter ? ((PrintWriter) out) : new PrintWriter(out, false),
+                false
+        );
     }
 
     static Repl fromConsole(Console con) {
@@ -43,7 +47,6 @@ public class Repl implements Callable<Void> {
     @Override
     public Void call() throws IOException {
         try (in; out) {
-
             printPromptForConsole();
             out.flush();
             var s = in.readLine();
