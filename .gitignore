@@ -30,3 +30,6 @@ hs_err_pid*
 
 # SQLite files
 *.db
+
+# Mac files
+.DS_Store

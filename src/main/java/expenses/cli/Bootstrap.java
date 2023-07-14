@@ -3,6 +3,7 @@ package expenses.cli;
 import expenses.Storage;
 import org.sqlite.JDBC;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,11 +17,15 @@ public class Bootstrap {
 
     public static final String DATABASE_DEFAULT_URL = "jdbc:sqlite:expenses.db";
 
-    public static void main(String... args) throws SQLException {
+    public static void main(String... args) throws SQLException, IOException {
         DriverManager.registerDriver(new JDBC());
-        switch (System.getProperty("script")) {
-            case "e" -> storeExpense(DATABASE_DEFAULT_URL, System.getProperties());
-            case "d" -> storeCurrentDate(DATABASE_DEFAULT_URL, System.getProperties());
+        if (System.getProperty("script") != null) {
+            switch (System.getProperty("script")) {
+                case "e" -> storeExpense(DATABASE_DEFAULT_URL, System.getProperties());
+                case "d" -> storeCurrentDate(DATABASE_DEFAULT_URL, System.getProperties());
+            }
+        } else {
+            Repl.create().call();
         }
 
     }
