@@ -30,7 +30,7 @@ public class DateParserTest {
 
     @Test
     public void shouldFailParsingOnLettersInDate() {
-        var res = sut.parse("2023-o7-20");
+        var res = sut.parse("2023-O7-20");
         assertTrue(res.isFailure());
     }
 
