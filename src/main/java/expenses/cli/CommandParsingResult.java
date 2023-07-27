@@ -10,4 +10,10 @@ public sealed interface CommandParsingResult<C extends Command> permits Ok, Synt
     }
 
     Stream<C> stream();
+
+    boolean isOk();
+
+    boolean isSyntaxError();
+
+    boolean isUnknown();
 }

@@ -73,7 +73,7 @@ public class ReplTest {
                         .add(s -> new Ok<>(() -> "pong"))
                         .add(s -> new Ok<>(() -> "gong"));
         assertDoesNotThrow(sut::call);
-        assertEquals("ambiguous command parser configurations" + platformSeparator, out.toString());
+        assertEquals("?AMBIGUOUS COMMAND PARSERS  ERROR" + platformSeparator, out.toString());
     }
 
     @ParameterizedTest
@@ -83,7 +83,7 @@ public class ReplTest {
                 Repl.fromStreams(testReader(sep, "zing"), out)
                         .add(s -> "ping".equals(s) ? new Ok<>(() -> "pong") : CommandParsingResult.unknown());
         assertDoesNotThrow(sut::call);
-        assertEquals("unknown command" + platformSeparator, out.toString());
+        assertEquals("?UNKNOWN COMMAND  ERROR" + platformSeparator, out.toString());
     }
 
     @ParameterizedTest

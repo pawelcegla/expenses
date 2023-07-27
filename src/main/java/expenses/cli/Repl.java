@@ -68,9 +68,9 @@ public class Repl implements Callable<Void> {
                                 .flatMap(CommandParsingResult::stream)
                                 .toList();
                 if (commands.isEmpty()) {
-                    out.println("unknown command");
+                    out.println("?UNKNOWN COMMAND  ERROR");
                 } else if (commands.size() > 1) {
-                    out.println("ambiguous command parser configurations");
+                    out.println("?AMBIGUOUS COMMAND PARSERS  ERROR");
                 } else {
                     out.println(commands.get(0).call());
                 }
