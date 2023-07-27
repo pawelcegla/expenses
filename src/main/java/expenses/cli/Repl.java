@@ -1,9 +1,15 @@
 package expenses.cli;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -56,7 +62,11 @@ public class Repl implements Callable<Void> {
             final String[] s = new String[1];
             s[0] = in.readLine();
             while (s[0] != null && !":wq".equalsIgnoreCase(s[0].trim())) {
-                var commands = commandParsers.stream().map(p -> p.apply(s[0])).flatMap(Optional::stream).toList();
+                var commands =
+                        commandParsers.stream()
+                                .map(p -> p.apply(s[0]))
+                                .flatMap(CommandParsingResult::stream)
+                                .toList();
                 if (commands.isEmpty()) {
                     out.println("unknown command");
                 } else if (commands.size() > 1) {

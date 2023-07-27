@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -51,7 +50,7 @@ public class ReplTest {
     public void shouldProcessRegularCommandWithExit(String sep) {
         var sut =
                 Repl.fromStreams(testReader(sep, "ping", ":wq"), out)
-                        .add(s -> Optional.of(() -> "pong"));
+                        .add(s -> new Ok<>(() -> "pong"));
         assertDoesNotThrow(sut::call);
         assertEquals("pong" + platformSeparator, out.toString());
     }
@@ -61,30 +60,40 @@ public class ReplTest {
     public void shouldProcessRegularCommands(String sep) {
         var sut =
                 Repl.fromStreams(testReader(sep, "ping", "ping"), out)
-                        .add(s -> Optional.of(() -> "pong"));
+                        .add(s -> new Ok<>(() -> "pong"));
         assertDoesNotThrow(sut::call);
         assertEquals("pong" + platformSeparator + "pong" + platformSeparator, out.toString());
     }
 
     @ParameterizedTest
     @MethodSource("possibleLineSeparators")
-    public void shouldDetectAmbiguousCommandParsers(String sep) {
+    public void shouldReportAmbiguousCommandParsers(String sep) {
         var sut =
                 Repl.fromStreams(testReader(sep, "ping"), out)
-                        .add(s -> Optional.of(() -> "pong"))
-                        .add(s -> Optional.of(() -> "gong"));
+                        .add(s -> new Ok<>(() -> "pong"))
+                        .add(s -> new Ok<>(() -> "gong"));
         assertDoesNotThrow(sut::call);
         assertEquals("ambiguous command parser configurations" + platformSeparator, out.toString());
     }
 
     @ParameterizedTest
     @MethodSource("possibleLineSeparators")
-    public void shouldDetectInvalidCommands(String sep) {
+    public void shouldReportUnknownCommands(String sep) {
         var sut =
                 Repl.fromStreams(testReader(sep, "zing"), out)
-                        .add(s -> "ping".equals(s) ? Optional.of(() -> "pong") : Optional.empty());
+                        .add(s -> "ping".equals(s) ? new Ok<>(() -> "pong") : CommandParsingResult.unknown());
         assertDoesNotThrow(sut::call);
         assertEquals("unknown command" + platformSeparator, out.toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("possibleLineSeparators")
+    public void shouldReportCommandSyntaxErrors(String sep) {
+        var sut =
+                Repl.fromStreams(testReader(sep, "ping"), out)
+                        .add(s -> "ping".equals(s) ? new SyntaxError<>(() -> "?SYNTAX  ERROR") : CommandParsingResult.unknown());
+        assertDoesNotThrow(sut::call);
+        assertEquals("?SYNTAX  ERROR" + platformSeparator, out.toString());
     }
 
     private static Stream<Arguments> possibleLineSeparators() {
