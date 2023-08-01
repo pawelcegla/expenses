@@ -57,4 +57,14 @@ public class ExpenseCommands {
                 .map(t -> "\"" + t.name() + "\"")
                 .collect(Collectors.joining(",", "[", "]"));
     }
+
+    @Command(command = "t", group = "Expenses", description = "Display existing tags")
+    String displayTags() {
+        var tags = jdbc.queryForList(
+                "SELECT DISTINCT t.value FROM expenses e, json_each(e.tags) t ORDER BY 1 ASC;",
+                Map.of(),
+                String.class
+        );
+        return String.join("\n", tags);
+    }
 }
