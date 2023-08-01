@@ -40,6 +40,18 @@ public class ExpenseCommands {
         return String.format("storeExpense: n='%d', rowid='%d'", n, rowid);
     }
 
+    @Command(command = "d", group = "Expenses", description = "Store current date")
+    String storeCurrentDate(@Option(required = true, description = "date") LocalDate date) {
+
+        var n = jdbc.update(
+                """
+                        INSERT INTO current_date(rowid, date) VALUES (1, :date)
+                        ON CONFLICT (rowid) DO UPDATE SET date = :date;""",
+                Map.of("date", date.toString())
+        );
+        return String.format("storeCurrentDate: n='%d'", n);
+    }
+
     private static String toJsonArray(Set<Tag> tags) {
         return tags.stream()
                 .map(t -> "\"" + t.name() + "\"")
