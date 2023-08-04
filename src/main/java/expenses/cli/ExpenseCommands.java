@@ -1,14 +1,21 @@
 package expenses.cli;
 
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
+import org.springframework.shell.table.BeanListTableModel;
+import org.springframework.shell.table.BorderStyle;
+import org.springframework.shell.table.TableBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
 
 @Command
 public class ExpenseCommands {
@@ -66,5 +73,29 @@ public class ExpenseCommands {
                 String.class
         );
         return String.join("\n", tags);
+    }
+
+    private record Expense(String rowid, String date, String amount, String description, String tags) {}
+
+    @Command(command = "s", group = "Expenses", description = "Full text search")
+    String fullTextSearch(@Option(required = true, description = "query") String query) {
+        var h = new LinkedHashMap<String, Object>();
+        h.put("rowid", "Id");
+        h.put("date", "Date");
+        h.put("amount", "Amount");
+        h.put("description", "Description");
+        h.put("tags", "Tags");
+        var results = jdbc.query("""
+                SELECT e.rowid, e.date, e.amount, e.description, e.tags FROM expenses e INNER JOIN fts_expenses(:query) f ON e.rowid = f.rowid ORDER BY e.date ASC;
+                """, Map.of("query", query), new DataClassRowMapper<>(Expense.class)).stream()
+                .map(e -> new Expense(e.rowid, e.date, e.amount, e.description, unjsonify(e.tags)))
+                .toList();
+        var tm = new BeanListTableModel<>(results, h);
+        var tb = new TableBuilder(tm).addHeaderBorder(BorderStyle.fancy_double).addInnerBorder(BorderStyle.fancy_light);
+        return tb.build().render(120);
+    }
+
+    private String unjsonify(String tags) {
+        return stream(tags.substring(1, tags.length() - 1).split(",")).map(t -> t.substring(1, t.length() - 1)).collect(Collectors.joining(", "));
     }
 }
